@@ -146,7 +146,6 @@ export default function Chat() {
 
   return (
     <div className="flex flex-col h-screen max-w-4xl mx-auto p-4">
-      <ContextBar tokens={totalTokens} cost={totalCost} />
       <Card className="flex-1 flex flex-col">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -168,6 +167,9 @@ export default function Chat() {
         </CardHeader>
 
         <CardContent className="flex-1 flex flex-col">
+          <div className="mb-4">
+            <ContextBar tokens={totalTokens} cost={totalCost} />
+          </div>
           <ScrollArea className="flex-1 pr-4" ref={scrollAreaRef}>
             <div className="space-y-4">
               {messages.map((message, index) => (
