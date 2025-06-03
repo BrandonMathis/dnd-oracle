@@ -238,7 +238,7 @@ export default function Chat() {
           <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span>Connected to Google Doc</span>
+              <span>Connected to Fractured Catalyst Wiki</span>
             </div>
             <a
               href="https://docs.google.com/document/d/1zKVB97yASZQTTfjfsqL-NFZyVSIYAVyttKyqRVNvINg/edit?usp=sharing"
