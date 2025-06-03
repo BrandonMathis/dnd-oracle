@@ -47,29 +47,33 @@ export default function ContextBar({ tokens, cost }: ContextBarProps) {
       {/* Collapsed Header - Always Visible */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full p-3 flex items-center justify-between hover:bg-muted/50 transition-colors rounded-lg"
+        className="w-full p-3 sm:p-3 flex items-center justify-between hover:bg-muted/50 transition-colors rounded-lg touch-manipulation min-h-[48px] sm:min-h-[auto]"
       >
-        <div className="flex items-center gap-2">
-          <BarChart3 className="w-4 h-4 text-muted-foreground" />
-          <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${getBarColor()}`} />
-            <span className={`text-sm font-medium ${getTextColor()}`}>
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <BarChart3 className="w-4 h-4 sm:w-4 sm:h-4 text-muted-foreground flex-shrink-0" />
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            <div
+              className={`w-2 h-2 rounded-full flex-shrink-0 ${getBarColor()}`}
+            />
+            <span
+              className={`text-sm sm:text-sm font-medium ${getTextColor()} flex-shrink-0`}
+            >
               {percentage.toFixed(1)}%
             </span>
-            <span className="text-xs text-muted-foreground">
+            <span className="text-xs sm:text-xs text-muted-foreground truncate">
               {formatTokens(tokens)}
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground font-medium">
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <span className="text-xs sm:text-xs text-muted-foreground font-medium">
             {formatCost(cost)}
           </span>
           {isExpanded ? (
-            <ChevronUp className="w-4 h-4 text-muted-foreground" />
+            <ChevronUp className="w-4 h-4 sm:w-4 sm:h-4 text-muted-foreground" />
           ) : (
-            <ChevronDown className="w-4 h-4 text-muted-foreground" />
+            <ChevronDown className="w-4 h-4 sm:w-4 sm:h-4 text-muted-foreground" />
           )}
         </div>
       </button>
@@ -79,16 +83,16 @@ export default function ContextBar({ tokens, cost }: ContextBarProps) {
         <div className="px-3 pb-3 space-y-3 border-t border-border/50">
           {/* Progress Bar */}
           <div className="space-y-2 pt-3">
-            <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+            <div className="w-full bg-muted rounded-full h-2 sm:h-2 overflow-hidden">
               <div
-                className={`h-2 rounded-full transition-all duration-500 ease-out ${getBarColor()}`}
+                className={`h-2 sm:h-2 rounded-full transition-all duration-500 ease-out ${getBarColor()}`}
                 style={{ width: `${percentage}%` }}
               />
             </div>
           </div>
 
           {/* Detailed Information */}
-          <div className="grid grid-cols-2 gap-4 text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs">
             <div className="space-y-1">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Tokens Used:</span>

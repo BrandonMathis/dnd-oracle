@@ -26,6 +26,9 @@ export default function Chat() {
   const [totalTokens, setTotalTokens] = useState(0);
   const [totalCost, setTotalCost] = useState(0);
   const [isCopyAnimating, setIsCopyAnimating] = useState(false);
+  const [showContextBar, setShowContextBar] = useState(false);
+  const [clickCount, setClickCount] = useState(0);
+  const [lastClickTime, setLastClickTime] = useState(0);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -33,6 +36,31 @@ export default function Chat() {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
   }, [messages, streamingContent]);
+
+  const handleOracleHeadingClick = () => {
+    const currentTime = Date.now();
+    const timeDiff = currentTime - lastClickTime;
+
+    if (timeDiff <= 1000) {
+      // Within 1 second of last click
+      const newClickCount = clickCount + 1;
+      setClickCount(newClickCount);
+
+      if (newClickCount >= 3) {
+        // Triple click achieved - toggle ContextBar visibility
+        setShowContextBar(!showContextBar);
+        // Reset click count
+        setClickCount(0);
+        setLastClickTime(0);
+      } else {
+        setLastClickTime(currentTime);
+      }
+    } else {
+      // More than 1 second since last click - reset
+      setClickCount(1);
+      setLastClickTime(currentTime);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -174,20 +202,26 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex flex-col h-screen max-w-4xl mx-auto p-4">
+    <div className="flex flex-col h-screen max-w-4xl mx-auto p-2 sm:p-4">
       <Card className="flex-1 flex flex-col">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <OracleAvatar className="w-6 h-6" />
-              The Oracle
+              <OracleAvatar className="w-6 h-6 sm:w-8 sm:h-8" />
+              <span
+                className="text-lg sm:text-xl cursor-pointer select-none hover:text-blue-600 transition-colors"
+                onClick={handleOracleHeadingClick}
+                title="Click 3 times quickly to toggle context bar"
+              >
+                The Oracle
+              </span>
             </div>
             <Button
               variant="outline"
               size="sm"
               onClick={copyEntireConversation}
               disabled={messages.length === 0}
-              className={`flex items-center justify-center w-10 h-8 p-0 transition-all duration-300 cursor-pointer ${
+              className={`flex items-center justify-center w-12 h-10 sm:w-10 sm:h-8 p-0 transition-all duration-300 cursor-pointer touch-manipulation ${
                 isCopyAnimating
                   ? "bg-green-100 border-green-300 scale-110"
                   : "hover:bg-gray-50"
@@ -195,54 +229,58 @@ export default function Chat() {
               title="Copy conversation"
             >
               <CopyIcon
-                className={`w-4 h-4 transition-all duration-300 ${
+                className={`w-5 h-5 sm:w-4 sm:h-4 transition-all duration-300 ${
                   isCopyAnimating ? "text-green-600 scale-125" : "text-gray-600"
                 }`}
               />
             </Button>
           </CardTitle>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span>Connected to Google Doc</span>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span>Connected to Google Doc</span>
+            </div>
             <a
               href="https://docs.google.com/document/d/1zKVB97yASZQTTfjfsqL-NFZyVSIYAVyttKyqRVNvINg/edit?usp=sharing"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-500 hover:text-blue-700 underline"
+              className="text-blue-500 hover:text-blue-700 underline touch-manipulation py-1"
             >
               View Document
             </a>
           </div>
         </CardHeader>
 
-        <CardContent className="flex-1 flex flex-col">
-          <div className="mb-4">
-            <ContextBar tokens={totalTokens} cost={totalCost} />
-          </div>
-          <ScrollArea className="flex-1 pr-4" ref={scrollAreaRef}>
-            <div className="space-y-6">
+        <CardContent className="flex-1 flex flex-col px-3 sm:px-6">
+          {showContextBar && (
+            <div className="mb-3 sm:mb-4">
+              <ContextBar tokens={totalTokens} cost={totalCost} />
+            </div>
+          )}
+          <ScrollArea className="flex-1 pr-2 sm:pr-4" ref={scrollAreaRef}>
+            <div className="space-y-4 sm:space-y-6">
               {messages.map((message, index) => (
                 <div key={index}>
                   {message.role === "user" ? (
-                    // User message - keep as bubble on the right
+                    // User message - optimized for mobile
                     <div className="flex justify-end">
-                      <div className="flex gap-3 max-w-[80%] flex-row-reverse">
+                      <div className="flex gap-2 sm:gap-3 max-w-[85%] sm:max-w-[80%] flex-row-reverse">
                         <div className="flex-shrink-0">
-                          <User className="w-8 h-8 p-2 bg-blue-500 text-white rounded-full" />
+                          <User className="w-7 h-7 sm:w-8 sm:h-8 p-1.5 sm:p-2 bg-blue-500 text-white rounded-full" />
                         </div>
-                        <div className="p-3 rounded-lg bg-blue-500 text-white">
+                        <div className="p-3 sm:p-4 rounded-lg bg-blue-500 text-white text-sm sm:text-base leading-relaxed">
                           {message.content}
                         </div>
                       </div>
                     </div>
                   ) : (
-                    // Assistant message - ChatGPT style full width
+                    // Assistant message - optimized for mobile
                     <div className="w-full">
-                      <div className="flex gap-3 mb-2">
+                      <div className="flex gap-2 sm:gap-3 mb-2">
                         <div className="flex-shrink-0">
-                          <OracleAvatar />
+                          <OracleAvatar className="w-7 h-7 sm:w-8 sm:h-8" />
                         </div>
-                        <div className="font-semibold text-gray-800">
+                        <div className="font-semibold text-gray-800 text-sm sm:text-base">
                           The Oracle
                         </div>
                         <div className="flex-1"></div>
@@ -250,12 +288,12 @@ export default function Chat() {
                           variant="ghost"
                           size="sm"
                           onClick={() => copyResponse(message.content)}
-                          className="h-6 px-2 text-gray-500 hover:text-gray-700 cursor-pointer"
+                          className="h-8 w-8 sm:h-6 sm:w-auto sm:px-2 p-0 sm:p-1 text-gray-500 hover:text-gray-700 cursor-pointer touch-manipulation"
                         >
                           <Copy className="w-4 h-4" />
                         </Button>
                       </div>
-                      <div className="ml-11 text-gray-900">
+                      <div className="ml-2 sm:ml-11 text-gray-900">
                         <div className="prose prose-sm max-w-none">
                           <ReactMarkdown
                             remarkPlugins={[remarkGfm]}
@@ -365,15 +403,15 @@ export default function Chat() {
 
               {streamingContent && (
                 <div className="w-full">
-                  <div className="flex gap-3 mb-2">
+                  <div className="flex gap-2 sm:gap-3 mb-2">
                     <div className="flex-shrink-0">
-                      <OracleAvatar />
+                      <OracleAvatar className="w-7 h-7 sm:w-8 sm:h-8" />
                     </div>
-                    <div className="font-semibold text-gray-800">
+                    <div className="font-semibold text-gray-800 text-sm sm:text-base">
                       The Oracle
                     </div>
                   </div>
-                  <div className="ml-11 text-gray-900">
+                  <div className="ml-9 sm:ml-11 text-gray-900">
                     <div className="prose prose-sm max-w-none">
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
@@ -482,20 +520,23 @@ export default function Chat() {
             </div>
           </ScrollArea>
 
-          <form onSubmit={handleSubmit} className="flex gap-2 mt-4">
+          <form
+            onSubmit={handleSubmit}
+            className="flex gap-2 sm:gap-3 mt-3 sm:mt-4 px-1"
+          >
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type your message..."
               disabled={isLoading}
-              className="flex-1"
+              className="flex-1 h-12 sm:h-10 text-base sm:text-sm px-4 sm:px-3 rounded-lg"
             />
             <Button
               type="submit"
               disabled={isLoading || !input.trim()}
-              size="icon"
+              className="h-12 w-12 sm:h-10 sm:w-10 rounded-lg touch-manipulation"
             >
-              <Send className="w-4 h-4" />
+              <Send className="w-5 h-5 sm:w-4 sm:h-4" />
             </Button>
           </form>
         </CardContent>

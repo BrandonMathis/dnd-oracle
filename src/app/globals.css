@@ -120,3 +120,59 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  /* Mobile-specific optimizations */
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+
+  /* Ensure minimum touch target size on mobile */
+  @media (max-width: 640px) {
+    button,
+    .button,
+    input[type="submit"],
+    input[type="button"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    /* Improve text readability on mobile */
+    .prose {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* Better spacing for mobile cards */
+    .card-mobile {
+      margin: 0.5rem;
+      border-radius: 0.75rem;
+    }
+  }
+
+  /* Smooth scrolling for better mobile experience */
+  .scroll-area {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  /* Hide scrollbars on mobile for cleaner look */
+  @media (max-width: 640px) {
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  /* Hide Next.js development overlays and any unwanted floating elements */
+  div[data-nextjs-toast-errors-parent],
+  div[data-nextjs-toast-errors],
+  #__next-build-watcher,
+  [data-nextjs-dialog-overlay],
+  [data-nextjs-dialog] {
+    display: none !important;
+  }
+}
